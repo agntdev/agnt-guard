@@ -3,17 +3,15 @@
     "name": "/setwelcome",
     "steps": [
       {
+        "send": { "text": "/setwelcome" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Configure the welcome message template"
+              "text": "Current welcome message:\n\nWelcome to the group! Please verify you're human.\n\nTo change it, tap below."
             }
           }
-        ],
-        "send": {
-          "text": "/setwelcome"
-        }
+        ]
       }
     ]
   }

@@ -3,17 +3,15 @@
     "name": "/trust",
     "steps": [
       {
+        "send": { "text": "/trust" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Mark a user as trusted (exempt from spam checks)"
+              "text": "Usage: Reply to a user's message with /trust\n\nOr use /trust @username"
             }
           }
-        ],
-        "send": {
-          "text": "/trust"
-        }
+        ]
       }
     ]
   }

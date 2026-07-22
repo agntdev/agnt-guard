@@ -3,17 +3,15 @@
     "name": "/mute",
     "steps": [
       {
+        "send": { "text": "/mute" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Mute a user for a specified duration"
+              "text": "Usage: Reply to a user's message with /mute <duration>\n\nExample: /mute 30m\nSupported: 10m, 1h, 1d, 7d"
             }
           }
-        ],
-        "send": {
-          "text": "/mute"
-        }
+        ]
       }
     ]
   }
