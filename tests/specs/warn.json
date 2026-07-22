@@ -1,0 +1,20 @@
+[
+  {
+    "name": "/warn",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Issue a warning to a user with reason"
+            }
+          }
+        ],
+        "send": {
+          "text": "/warn"
+        }
+      }
+    ]
+  }
+]
