@@ -1,15 +1,76 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { inlineButton, inlineKeyboard } from "../toolkit/index.js";
+import { addInfraction } from "../store.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
+const composer = new Composer<Ctx>();
 
-const composer = new Composer();
+const USAGE = "Usage: Reply to a user's message with /kick\n\nOr use /kick @username";
+const DONE = (name: string) => `👢 Kicked ${name} from the group.`;
+const SELF_KICK = "You can't kick yourself.";
+
+async function isAdmin(ctx: Ctx): Promise<boolean> {
+  if (!ctx.chat || ctx.chat.type === "private") return true;
+  try {
+    const member = await ctx.api.getChatMember(ctx.chat.id, ctx.from!.id);
+    return ["administrator", "creator"].includes(member.status);
+  } catch {
+    return false;
+  }
+}
 
 composer.command("kick", async (ctx) => {
-  await ctx.reply("Kick a user from the group");
+  if (!(await isAdmin(ctx))) {
+    await ctx.reply("Only admins can use this command.");
+    return;
+  }
+
+  let targetUserId: number | undefined;
+  let targetName = "Unknown";
+
+  if (ctx.message?.reply_to_message?.from) {
+    targetUserId = ctx.message.reply_to_message.from.id;
+    targetName = ctx.message.reply_to_message.from.first_name;
+  } else {
+    const parts = (ctx.message?.text ?? "").replace(/^\/kick(@\w+)?\s*/, "").trim().split(/\s+/);
+    const username = parts.find((p) => p.startsWith("@"));
+    if (username) {
+      targetName = username;
+    } else {
+      await ctx.reply(USAGE, {
+        reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+      });
+      return;
+    }
+  }
+
+  if (targetUserId === ctx.from?.id) {
+    await ctx.reply(SELF_KICK);
+    return;
+  }
+
+  const chatId = ctx.chat!.id;
+  const actorId = ctx.from!.id;
+
+  try {
+    await ctx.api.banChatMember(chatId, targetUserId!);
+    await ctx.api.unbanChatMember(chatId, targetUserId!);
+  } catch {
+    await ctx.reply("Couldn't kick that user. They may have higher permissions.");
+    return;
+  }
+
+  await addInfraction(chatId, {
+    user_id: targetUserId!,
+    action_type: "kick",
+    actor: actorId,
+    reason: "Kicked from group",
+    timestamp: Date.now(),
+  });
+
+  await ctx.reply(DONE(targetName), {
+    reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+  });
 });
 
 export default composer;

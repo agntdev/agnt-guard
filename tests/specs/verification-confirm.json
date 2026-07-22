@@ -3,17 +3,18 @@
     "name": "I'm human",
     "steps": [
       {
+        "send": { "callback": "verification:confirm" },
         "expect": [
           {
-            "method": "sendMessage",
+            "method": "answerCallbackQuery"
+          },
+          {
+            "method": "editMessageText",
             "payload": {
-              "text": "Confirm human verification for new members"
+              "text": "✅ You're verified! Welcome to the group."
             }
           }
-        ],
-        "send": {
-          "callback": "verification:confirm"
-        }
+        ]
       }
     ]
   }

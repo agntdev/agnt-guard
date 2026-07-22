@@ -3,17 +3,15 @@
     "name": "/setthresholds",
     "steps": [
       {
+        "send": { "text": "/setthresholds" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Configure spam detection thresholds"
+              "text": "Current spam thresholds:\n\nLinks per minute: 3\nDuplicate messages: 3\nAction on threshold: warn\nEscalation action: mute\n\nTap below to update."
             }
           }
-        ],
-        "send": {
-          "text": "/setthresholds"
-        }
+        ]
       }
     ]
   }

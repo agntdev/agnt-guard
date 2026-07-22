@@ -3,17 +3,15 @@
     "name": "/setrules",
     "steps": [
       {
+        "send": { "text": "/setrules" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Set the group's moderation rules text"
+              "text": "Current rules:\n\nBe respectful and follow community guidelines.\n\nTo change them, tap below."
             }
           }
-        ],
-        "send": {
-          "text": "/setrules"
-        }
+        ]
       }
     ]
   }
